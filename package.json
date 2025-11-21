@@ -1,0 +1,45 @@
+{
+  "name": "fb-post-ai-agent",
+  "version": "1.0.0",
+  "description": "Autonomous Facebook posting agent with OpenAI content generation",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "facebook",
+    "openai",
+    "automation",
+    "social-media"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/fb-post-ai.git"
+  },
+  "dependencies": {
+    "@bull-board/api": "^5.19.0",
+    "@bull-board/express": "^5.19.0",
+    "axios": "^1.6.7",
+    "bullmq": "^5.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "form-data": "^4.0.0",
+    "ioredis": "^5.3.2",
+    "openai": "^4.28.0",
+    "pg": "^8.11.3",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
