@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RefreshCw, Clock, CheckCircle, XCircle, Loader } from 'lucide-react';
 import client from '../api/client';
+import { handleApiError } from '../utils/errorHandler';
 
 function Jobs() {
   const [queueStats, setQueueStats] = useState(null);
@@ -14,7 +15,8 @@ function Jobs() {
       const data = await client.get('/queue/stats');
       setQueueStats(data);
     } catch (err) {
-      setError(err.message);
+      const errorInfo = handleApiError(err);
+      setError(errorInfo.message);
     } finally {
       setLoading(false);
     }

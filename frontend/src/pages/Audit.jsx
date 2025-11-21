@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RefreshCw, Shield, Search } from 'lucide-react';
 import client from '../api/client';
+import { handleApiError } from '../utils/errorHandler';
 
 function Audit() {
   const [logs, setLogs] = useState([]);
@@ -24,7 +25,8 @@ function Audit() {
       const data = await client.get(`/audit?${params.toString()}`);
       setLogs(data.logs || []);
     } catch (err) {
-      setError(err.message);
+      const errorInfo = handleApiError(err);
+      setError(errorInfo.message);
     } finally {
       setLoading(false);
     }

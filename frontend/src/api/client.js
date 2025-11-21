@@ -1,12 +1,27 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+// Get API URL from environment or use default
+const getApiUrl = () => {
+  // In production (Vercel), use environment variable
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // In development, use proxy
+  if (import.meta.env.DEV) {
+    return '/api';
+  }
+  // Fallback for production without env var
+  return '/api';
+};
+
+const API_BASE_URL = getApiUrl();
 
 const client = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
 });
 
 // Request interceptor

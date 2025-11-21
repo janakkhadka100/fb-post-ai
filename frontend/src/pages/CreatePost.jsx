@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Send, Loader } from 'lucide-react';
 import client from '../api/client';
+import { handleApiError, isBackendConfigured } from '../utils/errorHandler';
 
 function CreatePost() {
   const [pages, setPages] = useState([]);
@@ -38,7 +39,8 @@ function CreatePost() {
         setFormData((prev) => ({ ...prev, pageId: data.pages[0].pageId }));
       }
     } catch (err) {
-      setError('Failed to load pages: ' + err.message);
+      const errorInfo = handleApiError(err);
+      setError('Failed to load pages: ' + errorInfo.message);
     }
   };
 

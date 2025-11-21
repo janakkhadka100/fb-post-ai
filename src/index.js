@@ -36,10 +36,34 @@ class Application {
     this.healthy = true;
     logger.info('Startup validation passed');
 
-    // Setup CORS
+    // Setup CORS - Allow all origins in development, specific in production
+    const allowedOrigins = process.env.FRONTEND_URL 
+      ? process.env.FRONTEND_URL.split(',')
+      : ['http://localhost:5173', 'https://*.vercel.app'];
+    
     this.app.use(cors({
-      origin: process.env.FRONTEND_URL || '*',
+      origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        if (!origin) return callback(null, true);
+        
+        // Check if origin is in allowed list or matches pattern
+        const isAllowed = allowedOrigins.some(allowed => {
+          if (allowed.includes('*')) {
+            const pattern = allowed.replace('*', '.*');
+            return new RegExp(pattern).test(origin);
+          }
+          return allowed === origin;
+        });
+        
+        if (isAllowed || process.env.NODE_ENV !== 'production') {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     }));
 
     // Setup Express routes

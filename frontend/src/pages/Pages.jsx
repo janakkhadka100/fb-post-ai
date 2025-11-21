@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RefreshCw, FileText } from 'lucide-react';
 import client from '../api/client';
+import { handleApiError, isBackendConfigured } from '../utils/errorHandler';
 
 function Pages() {
   const [pages, setPages] = useState([]);
@@ -14,7 +15,8 @@ function Pages() {
       const data = await client.get('/pages');
       setPages(data.pages || []);
     } catch (err) {
-      setError(err.message);
+      const errorInfo = handleApiError(err);
+      setError(errorInfo.message);
     } finally {
       setLoading(false);
     }

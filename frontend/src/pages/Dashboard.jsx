@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Activity, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import client from '../api/client';
+import { handleApiError, isBackendConfigured } from '../utils/errorHandler';
 
 function Dashboard() {
   const [health, setHealth] = useState(null);
@@ -18,13 +19,20 @@ function Dashboard() {
     try {
       setError(null);
       const [healthData, statsData] = await Promise.all([
-        client.get('/health'),
+        client.get('/health').catch((err) => {
+          const errorInfo = handleApiError(err);
+          if (errorInfo.isBackendMissing || errorInfo.isConnectionError) {
+            return null; // Return null to show backend not configured
+          }
+          throw err;
+        }),
         client.get('/queue/stats').catch(() => null),
       ]);
       setHealth(healthData);
       setQueueStats(statsData);
     } catch (err) {
-      setError(err.message);
+      const errorInfo = handleApiError(err);
+      setError(errorInfo.message);
     } finally {
       setLoading(false);
     }
@@ -41,7 +49,24 @@ function Dashboard() {
         <p>Overview of your Facebook Post AI Agent</p>
       </div>
 
-      {error && <div className="error">{error}</div>}
+      {error && (
+        <div className="error">
+          {error}
+          {!isBackendConfigured() && (
+            <div style={{ marginTop: '1rem', padding: '1rem', background: '#fff3cd', borderRadius: '8px' }}>
+              <strong>Backend not configured:</strong>
+              <p style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
+                Please set <code>VITE_API_URL</code> environment variable in Vercel to your backend URL.
+                <br />
+                Example: <code>https://your-backend.railway.app/api</code>
+              </p>
+              <p style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
+                See <code>BACKEND_DEPLOY.md</code> for deployment instructions.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-3">
         <div className="card">
